@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
 <ProjectConfig>
-	<Project term="**项目商用代码">
-		<ProjectName term="**项目商用系统组件代码">
-			<ProjectInterName>**项目商用系统组件代码</ProjectInterName>
-			<ProjectInit>**项目初始化命令</ProjectInit>
-			<ProjectBuild>**项目编译命令</ProjectBuild>
+	<Project term="**Project commercial code">
+		<ProjectName term="**Project commercial system component code">
+			<ProjectInterName>**Project commercial system component code</ProjectInterName>
+			<ProjectInit>**Project initialization command</ProjectInit>
+			<ProjectBuild>**Project compilation command</ProjectBuild>
 		</ProjectName>
-			<ProjectName term="**项目商用系统组件代码">
-				<ProjectInterName>**项目商用系统组件代码</ProjectInterName>
-				<ProjectInit>**项目初始化命令</ProjectInit>
-				<ProjectBuild>**项目编译命令</ProjectBuild>
+			<ProjectName term="**Project commercial chip component code">
+				<ProjectInterName>**Project commercial chip component code</ProjectInterName>
+				<ProjectInit>**Project initialization command</ProjectInit>
+				<ProjectBuild>**Project compilation command</ProjectBuild>
 		</ProjectName>
     </Project>
 </ProjectConfig>
