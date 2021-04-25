@@ -29,7 +29,7 @@ ReadFile(){
 		fi
 	done
 }
-int main(){
+main(){
 	echo 1.Git初始化
 	echo 2.在当前仓里面下载更新
 	echo 3.上库代码
@@ -108,6 +108,7 @@ int main(){
 		read -p "请输入你的下载的仓名:"code_name
 		repo sync -c code_name
 	elif [ $select_num==6 ];
+		then
 		repo sync -j16 -c --no-tags
 	elif [ $select_num==7 ];	
 		then 
