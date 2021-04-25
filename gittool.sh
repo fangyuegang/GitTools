@@ -6,7 +6,7 @@ project_path=$(cd `dirname $0`; pwd)
 
 ReadFile(){
 	IFS=$'\n\n'
-	for ele_value in `cat project_path/ProjectConfig.xml \awk -F '>' '{print $2}' \awk -F '<' '{print $1}'`
+	for ele_value in `cat project_path/ProjectConfig.xml | awk -F '>' '{print $2}' | awk -F '<' '{print $1}'`
 	do
 		index=$(($index+1))
 		arr[$index]=$ele_value
