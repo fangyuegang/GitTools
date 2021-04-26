@@ -108,15 +108,40 @@ elif [ $num == 4 ];
 	read -p "请输入您的选择:" VersionSelect
 	echo $ini_select
 	if [ $VersionSelect -lt $ini_select ];
-		then echo "你当前选择的版本:"${arr_name[$VersionSelect]}
-		eval ${arr_build_command[$VersionSelect]}
+		then 
+		echo "你当前选择的版本:"${arr_name[$VersionSelect]}
+		echo 1.选择编译部分镜像
+		echo 2.选择编译所有镜像
+		read -p "请输入你的选择:" build_select
+		if [ $build_select==1 ];
+			then 
+			read -p "请输入你需要编译的镜像名称:" build_name
+			eval ${arr_build_command[$VersionSelect]} $build_name
+		elif [ $build_select==2 ];
+			then 
+			eval ${arr_build_command[$VersionSelect]}
+		else
+			echo "输入不满足条件"
+		fi
 	elif [ $VersionSelect -eq $ini_select ];
-		then echo "你当前选择的版本:"${arr_name[$VersionSelect]}
-		eval ${arr_build_command[$VersionSelect]}
+		then 
+		echo "你当前选择的版本:"${arr_name[$VersionSelect]}
+		echo 1.选择编译部分镜像
+		echo 2.选择编译所有镜像
+		read -p "请输入你的选择:" build_select
+		if [ $build_select==1 ];
+			then 
+			read -p "请输入你需要编译的镜像名称:" build_name
+			eval ${arr_build_command[$VersionSelect]} $build_name
+		elif [ $build_select==2 ];
+			then 
+			eval ${arr_build_command[$VersionSelect]}
+		else
+			echo "输入不满足条件"
+		fi
 	else
 		echo "输入不满足条件"
 	fi
-
 elif [ $num == 5 ];
 	then echo "更新下载特定的仓"
 	read -p "请输入您更新的仓名:" StoreHouse
