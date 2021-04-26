@@ -108,15 +108,40 @@ elif [ $num == 4 ];
 	read -p "Please enter your choice:" VersionSelect
 	echo $ini_select
 	if [ $VersionSelect -lt $ini_select ];
-		then echo "The version you currently select:"${arr_name[$VersionSelect]}
-		eval ${arr_build_command[$VersionSelect]}
+		then 
+		echo "The version you currently select:"${arr_name[$VersionSelect]}
+		echo 1.Selecting to Compile a Part of the Image
+		echo 2.Select Compile All Images
+		read -p "Please enter your selection:" build_select
+		if [ $build_select==1 ];
+			then 
+			read -p "Enter the name of the image to be compiled:" build_name
+			eval ${arr_build_command[$VersionSelect]} $build_name
+		elif [ $build_select==2 ];
+			then 
+			eval ${arr_build_command[$VersionSelect]}
+		else
+			echo "The input does not meet the conditions"
+		fi
 	elif [ $VersionSelect -eq $ini_select ];
-		then echo "The version you currently select:"${arr_name[$VersionSelect]}
-		eval ${arr_build_command[$VersionSelect]}
+		then 
+		echo "The version you currently select:"${arr_name[$VersionSelect]}
+		echo 1.Selecting to Compile a Part of the Image
+		echo 2.Select Compile All Images
+		read -p "Please enter your selection:" build_select
+		if [ $build_select==1 ];
+			then 
+			read -p "Enter the name of the image to be compiled:" build_name
+			eval ${arr_build_command[$VersionSelect]} $build_name
+		elif [ $build_select==2 ];
+			then 
+			eval ${arr_build_command[$VersionSelect]}
+		else
+			echo "The input does not meet the conditions"
+		fi
 	else
 		echo "The input does not meet the criteria"
 	fi
-
 elif [ $num == 5 ];
 	then echo "Updates download specific warehouse"
 	read -p "Please enter your updated warehouse name:" StoreHouse
