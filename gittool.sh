@@ -33,22 +33,27 @@ ReadFile(){
 		fi
 	done
 }
-echo 1.Git初始化
-echo 2.在当前仓里面更新版本
-echo 3.上库代码
-echo 4.代码编译 
-echo 5.更新下载特定的仓
-echo 6.下载版本 
-echo 7.回退代码
-echo 8.将代码回退到特定版本 
-echo 9.新建Branch
-echo 10.查看Git上传记录 
-echo 11.代码冲突处理
-echo "如果有使用问题或者建议,请联系fangyuegang"
-echo "邮箱 2251858097@qq.com"
-read -p "请输入您的选择:" num
-if 	 [ $num == 1 ];
-	then
+
+DownloadCode(){
+	echo 1.下载单仓代码
+	echo 2.下载全部代码
+	echo 3.退出	
+	read -p "请输入您的选择:" download_select
+	if [ $download_select == 1 ];
+		then
+		echo "开始下载单仓代码"
+		read -p "请输入您想要下载的仓名:" warehouse_select
+		repo sync -j16 -c warehouse_select
+	elif [ $download_select  == 2 ];
+		then 
+		echo "开始下载全部代码"
+		repo sync -j16 -c --no-tags
+	else
+		echo "退出"
+	fi
+}
+
+InitProject(){
 	ReadFile
 	for i in ${arr_name[@]}
 	do 
@@ -60,11 +65,45 @@ if 	 [ $num == 1 ];
 	if [ $VersionSelect -lt $ini_select ];
 		then echo "你当前选择的版本:"${arr_name[$VersionSelect]}
 		eval ${arr_ini_command[$VersionSelect]}
+		DownloadCode
 	elif [ $VersionSelect -eq $ini_select ];
 		then echo "你当前选择的版本:"${arr_name[$VersionSelect]}
 		eval ${arr_ini_command[$VersionSelect]}
+		DownloadCode
 	else
-		echo "输入不满足条件"
+		echo "输入不满足条件,退出"
+	fi
+}
+
+echo 1.Git初始化
+echo 2.在当前仓里面更新版本
+echo 3.上库代码
+echo 4.代码编译 
+echo 5.更新代码
+echo 6.回退代码
+echo 7.将代码回退到特定版本 
+echo 8.新建Branch
+echo 9.查看Git上传记录 
+echo 10.代码冲突处理
+echo 11.退出
+echo "如果有使用问题或者建议,请联系fangyuegang"
+echo "邮箱 2251858097@qq.com"
+read -p "请输入您的选择:" num
+if	[ $num == 1 ];
+	then
+	current_path=`pwd`
+	cd ~
+	home_path=`pwd`
+	cd $current_path
+	if [ "$current_path" == "$home_path" ];
+		then 
+		echo "检测到你当前操作在家目录下面,建议创建文件夹"
+		read -p "请输入你创建文件夹名:" ini_file_name
+		mkdir $ini_file_name
+		cd $current_path/$ini_file_name
+		InitProject
+	else 
+		InitProject
 	fi
 elif [ $num == 2 ];
 	then echo "在当前仓里面更新版本"
@@ -75,12 +114,14 @@ elif [ $num  == 3 ];
 	git commit
 	echo 1.启动代码上传到服务器
 	echo 2.不启动代码上传到服务器
+	echo 3.退出
 	read -p "请输入您的选择:" UploadServer
 	if [ $UploadServer == 1 ];
 		then echo "启动代码上传到服务器"
 		repo upload .
 		echo 1.启动代码编译
 		echo 2.不启动代码编译
+		echo 3.退出
 		read -p "请输入您的选择:" CodeCompilation
 			if [ $CodeCompilation == 1 ];
 				then echo "启动代码编译"
@@ -90,12 +131,12 @@ elif [ $num  == 3 ];
 			elif [ $CodeCompilation == 2 ];
 				then echo "不启动代码编译"
 			else 
-				echo "输入不满足条件"
+				echo "退出"
 			fi
 	elif [ $UploadServer == 2 ];
 		then echo "不启动代码上传到服务器"
 	else
-		echo "输入不满足条件"
+		echo "退出"
 	fi
 elif [ $num == 4 ];
 	then echo "执行编译代码"
@@ -112,6 +153,7 @@ elif [ $num == 4 ];
 		echo "你当前选择的版本:"${arr_name[$VersionSelect]}
 		echo 1.选择编译部分镜像
 		echo 2.选择编译所有镜像
+		echo 3.退出
 		read -p "请输入你的选择:" build_select
 		if [ $build_select==1 ];
 			then 
@@ -121,13 +163,14 @@ elif [ $num == 4 ];
 			then 
 			eval ${arr_build_command[$VersionSelect]}
 		else
-			echo "输入不满足条件"
+			echo "退出"
 		fi
 	elif [ $VersionSelect -eq $ini_select ];
 		then 
 		echo "你当前选择的版本:"${arr_name[$VersionSelect]}
 		echo 1.选择编译部分镜像
 		echo 2.选择编译所有镜像
+		echo 3.退出
 		read -p "请输入你的选择:" build_select
 		if [ $build_select==1 ];
 			then 
@@ -137,24 +180,24 @@ elif [ $num == 4 ];
 			then 
 			eval ${arr_build_command[$VersionSelect]}
 		else
-			echo "输入不满足条件"
+			echo "退出"
 		fi
 	else
-		echo "输入不满足条件"
+		echo "退出"
 	fi
 elif [ $num == 5 ];
 	then echo "更新下载特定的仓"
 	read -p "请输入您更新的仓名:" StoreHouse
 	repo sync -c $StoreHouse
-elif [ $num == 6 ];
-	then echo "下载版本"
+	echo "下载版本"
 	repo sync -j16 -c --no-tags
-elif [ $num == 7 ];
+elif [ $num == 6 ];
 	then echo "回退代码"
 	git status
 	echo 1.无显示，请输入1
 	echo 2.显示绿色，请输入2
 	echo 3.显示红色，请输入3
+	echo 4.退出
 	read -p "请输入您的选择:" RollbackSelection
 		if [ $RollbackSelection == 1];
 		then git reset --soft HEAD^
@@ -172,10 +215,10 @@ elif [ $num == 7 ];
 		read -p "请输入回退代码路径:" FilePath
 		git checkout $FilePath
 		else
-		echo "输入不满足条件"
+		echo "退出"
 		fi
 	echo "如果回退未成功且显示文件为红色，则为新增，直接删除即可"
-elif [ $num == 8 ];
+elif [ $num == 7 ];
 	then echo "将代码回退到特定版本"
 	read -p "请输入你存放manifest.xml文件路径:" FilePath
 	echo $FilePath
@@ -191,6 +234,7 @@ elif [ $num == 8 ];
 	repo init -m manifest.xml
 	echo 1.拉取当仓
 	echo 2.拉取全部代码
+	echo 3.退出
 	read -p "请输入你的选择:" GetCodeSelect
 	if [ $GetCodeSelect == 1 ];
 		then read -p "请输入你的仓名:" WarehouseName
@@ -198,16 +242,16 @@ elif [ $num == 8 ];
 	elif [ $GetCodeSelect == 2 ];
 		then repo sync -j16 -c --no-tags
 	else
-	echo "输入不满足条件"
+	echo "退出"
 	fi
-elif [ $num == 9 ];
+elif [ $num == 8 ];
 	then read -p "请输入你的Branch名称:" FileName
 	repo start $FileName --all
-elif [ $num == 10 ];
+elif [ $num == 9 ];
 	then git log
-elif [ $num == 11 ];
+elif [ $num == 10 ];
 	then echo "查看冲突:"
 	git diff
 else
-	echo "输入不满足条件"
+	echo "退出"
 fi
