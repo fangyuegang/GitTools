@@ -75,17 +75,36 @@ InitProject(){
 	fi
 }
 
+UpdateProject(){
+	echo 1.在仓里面更新当前仓代码
+	echo 2.不在仓里面更新单仓代码
+	echo 3.更新全部代码
+	echo 4.退出
+	read -p "请输入您的选择:" update_select
+	if	[ $update_select == 1 ];
+		then echo "正在更新当前仓代码"
+		repo sync .
+	elif	[ $update_select == 2 ];
+		then echo "正在更新特定的仓"
+		read -p "请输入您更新的仓名:" StoreHouse
+		repo sync -c $StoreHouse
+	elif	[ $update_select == 3 ];
+		then echo "正在更新全部代码"
+		repo sync -j16 -c --no-tags
+	else
+		echo "退出"
+	fi
+}
 echo 1.Git初始化
-echo 2.在当前仓里面更新版本
-echo 3.上库代码
-echo 4.代码编译 
-echo 5.更新代码
-echo 6.回退代码
-echo 7.将代码回退到特定版本 
-echo 8.新建Branch
-echo 9.查看Git上传记录 
-echo 10.代码冲突处理
-echo 11.退出
+echo 2.上库代码
+echo 3.代码编译 
+echo 4.更新代码
+echo 5.回退代码
+echo 6.将代码回退到特定版本 
+echo 7.新建Branch
+echo 8.查看Git上传记录 
+echo 9.代码冲突处理
+echo 10.退出
 echo "如果有使用问题或者建议,请联系fangyuegang"
 echo "邮箱 2251858097@qq.com"
 read -p "请输入您的选择:" num
@@ -105,10 +124,7 @@ if	[ $num == 1 ];
 	else 
 		InitProject
 	fi
-elif [ $num == 2 ];
-	then echo "在当前仓里面更新版本"
-	repo sync .
-elif [ $num  == 3 ];
+elif [ $num  == 2 ];
 	then echo "上库代码"
 	git add .
 	git commit
@@ -138,7 +154,7 @@ elif [ $num  == 3 ];
 	else
 		echo "退出"
 	fi
-elif [ $num == 4 ];
+elif [ $num == 3 ];
 	then echo "执行编译代码"
 	ReadFile
 	for i in ${arr_name[@]}
@@ -185,13 +201,10 @@ elif [ $num == 4 ];
 	else
 		echo "退出"
 	fi
+elif [ $num == 4 ];
+	then 
+	UpdateProject
 elif [ $num == 5 ];
-	then echo "更新下载特定的仓"
-	read -p "请输入您更新的仓名:" StoreHouse
-	repo sync -c $StoreHouse
-	echo "下载版本"
-	repo sync -j16 -c --no-tags
-elif [ $num == 6 ];
 	then echo "回退代码"
 	git status
 	echo 1.无显示，请输入1
@@ -199,7 +212,7 @@ elif [ $num == 6 ];
 	echo 3.显示红色，请输入3
 	echo 4.退出
 	read -p "请输入您的选择:" RollbackSelection
-		if [ $RollbackSelection == 1];
+		if [ $RollbackSelection == 1 ];
 		then git reset --soft HEAD^
 		git status
 		read -p "请输入回退代码路径:" FilePath
@@ -218,7 +231,7 @@ elif [ $num == 6 ];
 		echo "退出"
 		fi
 	echo "如果回退未成功且显示文件为红色，则为新增，直接删除即可"
-elif [ $num == 7 ];
+elif [ $num == 6 ];
 	then echo "将代码回退到特定版本"
 	read -p "请输入你存放manifest.xml文件路径:" FilePath
 	echo $FilePath
@@ -244,12 +257,12 @@ elif [ $num == 7 ];
 	else
 	echo "退出"
 	fi
-elif [ $num == 8 ];
+elif [ $num == 7 ];
 	then read -p "请输入你的Branch名称:" FileName
 	repo start $FileName --all
-elif [ $num == 9 ];
+elif [ $num == 8 ];
 	then git log
-elif [ $num == 10 ];
+elif [ $num == 9 ];
 	then echo "查看冲突:"
 	git diff
 else
