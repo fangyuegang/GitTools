@@ -8,7 +8,7 @@ curPath=$(dirname $(readlink -f "$0"))
 ReadFile(){
 	IFS=$'\n\n' 
 	#echo awk '/<projectname>/,/<\/projectname>/ {print $0}' server.xml | awk -v FS="<projectname>" -v OFS=" " '{print $2}' | awk -v FS="<\/projectname>" -v OFS=" " '{print $1}'
-	for ele_value in `cat $curPath/ProjectConfigEn.xml | awk -F '>' '{print $2}' | awk -F '<' '{print $1}'`
+	for ele_value in `cat $curPath/ProjectConfig.xml | awk -F '>' '{print $2}' | awk -F '<' '{print $1}'`
 	do
 		a=$(($a+1))
 		arr[$a]=$ele_value
@@ -33,22 +33,27 @@ ReadFile(){
 		fi
 	done
 }
-echo 1.The Git initialization
-echo 2.Update the version in the current warehouse
-echo 3.Code go to library
-echo 4.The code to compile 
-echo 5.Updates download specific warehouse
-echo 6.The download version 
-echo 7.The fallback code
-echo 8.Reverse code to a specific version 
-echo 9.The new Branch
-echo 10.View the Git upload record 
-echo 11.Code conflict handling
-echo "If you have any questions or suggestions, please contact fangyuegang"
-echo "mailbox 2251858097@qq.com"
-read -p "Please enter your choice:" num
-if 	 [ $num == 1 ];
-	then
+
+DownloadCode(){
+	echo 1.Download the cell code
+	echo 2.Download the full code
+	echo 3.exit	
+	read -p "Please enter your choice:" download_select
+	if [ $download_select == 1 ];
+		then
+		echo "Start downloading the cell code"
+		read -p "Please enter the name of the warehouse you want to download:" warehouse_select
+		repo sync -j16 -c warehouse_select
+	elif [ $download_select  == 2 ];
+		then 
+		echo "Start downloading the entire code"
+		repo sync -j16 -c --no-tags
+	else
+		echo "exit"
+	fi
+}
+
+InitProject(){
 	ReadFile
 	for i in ${arr_name[@]}
 	do 
@@ -60,27 +65,79 @@ if 	 [ $num == 1 ];
 	if [ $VersionSelect -lt $ini_select ];
 		then echo "The version you currently select:"${arr_name[$VersionSelect]}
 		eval ${arr_ini_command[$VersionSelect]}
+		DownloadCode
 	elif [ $VersionSelect -eq $ini_select ];
 		then echo "The version you currently select:"${arr_name[$VersionSelect]}
 		eval ${arr_ini_command[$VersionSelect]}
+		DownloadCode
 	else
-		echo "The input does not meet the criteria"
+		echo "The input does not meet the criteria,exit"
 	fi
-elif [ $num == 2 ];
-	then echo "Update the version in the current warehouse"
-	repo sync .
-elif [ $num  == 3 ];
-	then echo "Code go to library"
+}
+
+UpdateProject(){
+	echo 1.Update the current warehouse code in the warehouse
+	echo 2.Do not update the single warehouse code inside the warehouse
+	echo 3.Update all the code
+	echo 4.exit
+	read -p "Please enter your choice:" update_select
+	if	[ $update_select == 1 ];
+		then echo "Updating the current warehouse code"
+		repo sync .
+	elif	[ $update_select == 2 ];
+		then echo "The specific warehouse is being updated"
+		read -p "Please enter your updated warehouse name:" StoreHouse
+		repo sync -c $StoreHouse
+	elif	[ $update_select == 3 ];
+		then echo "Updating all the code"
+		repo sync -j16 -c --no-tags
+	else
+		echo "exit"
+	fi
+}
+echo 1.Git initialization
+echo 2.The library code
+echo 3.The code to compile 
+echo 4.Update the code
+echo 5.The fallback code
+echo 6.Reverse code to a specific version 
+echo 7.The new Branch
+echo 8.View the Git upload record 
+echo 9.Code conflict handling
+echo 10.Exit
+echo "If you have any questions or suggestions, please contactfangyuegang"
+echo "Mailbox 2251858097@qq.com"
+read -p "Please enter your choice:" num
+if	[ $num == 1 ];
+	then
+	current_path=`pwd`
+	cd ~
+	home_path=`pwd`
+	cd $current_path
+	if [ "$current_path" == "$home_path" ];
+		then 
+		echo "It is detected that you are currently operating under the home directory. It is suggested to create a folder"
+		read -p "Please enter the name of the folder you created:" ini_file_name
+		mkdir $ini_file_name
+		cd $current_path/$ini_file_name
+		InitProject
+	else 
+		InitProject
+	fi
+elif [ $num  == 2 ];
+	then echo "The library code"
 	git add .
 	git commit
 	echo 1.The startup code is uploaded to the server
 	echo 2.Do not start code upload to server
+	echo 3.Exit
 	read -p "Please enter your choice:" UploadServer
 	if [ $UploadServer == 1 ];
 		then echo "The startup code is uploaded to the server"
 		repo upload .
 		echo 1.Start code compilation
 		echo 2.Code compilation is not started
+		echo 3.Exit
 		read -p "Please enter your choice:" CodeCompilation
 			if [ $CodeCompilation == 1 ];
 				then echo "Start code compilation"
@@ -90,14 +147,14 @@ elif [ $num  == 3 ];
 			elif [ $CodeCompilation == 2 ];
 				then echo "Code compilation is not started"
 			else 
-				echo "The input does not meet the criteria"
+				echo "exit"
 			fi
 	elif [ $UploadServer == 2 ];
 		then echo "Do not start code upload to server"
 	else
-		echo "The input does not meet the criteria"
+		echo "exit"
 	fi
-elif [ $num == 4 ];
+elif [ $num == 3 ];
 	then echo "Executing compiled code"
 	ReadFile
 	for i in ${arr_name[@]}
@@ -110,53 +167,52 @@ elif [ $num == 4 ];
 	if [ $VersionSelect -lt $ini_select ];
 		then 
 		echo "The version you currently select:"${arr_name[$VersionSelect]}
-		echo 1.Selecting to Compile a Part of the Image
-		echo 2.Select Compile All Images
-		read -p "Please enter your selection:" build_select
+		echo 1.Select Compile Partial Mirror
+		echo 2.Select to compile all images
+		echo 3.Exit
+		read -p "Please enter your choice:" build_select
 		if [ $build_select==1 ];
 			then 
-			read -p "Enter the name of the image to be compiled:" build_name
+			read -p "Please enter the name of the image you want to compile:" build_name
 			eval ${arr_build_command[$VersionSelect]} $build_name
 		elif [ $build_select==2 ];
 			then 
 			eval ${arr_build_command[$VersionSelect]}
 		else
-			echo "The input does not meet the conditions"
+			echo "exit"
 		fi
 	elif [ $VersionSelect -eq $ini_select ];
 		then 
 		echo "The version you currently select:"${arr_name[$VersionSelect]}
-		echo 1.Selecting to Compile a Part of the Image
-		echo 2.Select Compile All Images
-		read -p "Please enter your selection:" build_select
+		echo 1.Select Compile Partial Mirror
+		echo 2.Select to compile all images
+		echo 3.Exit
+		read -p "Please enter your choice:" build_select
 		if [ $build_select==1 ];
 			then 
-			read -p "Enter the name of the image to be compiled:" build_name
+			read -p "Please enter the name of the image you want to compile:" build_name
 			eval ${arr_build_command[$VersionSelect]} $build_name
 		elif [ $build_select==2 ];
 			then 
 			eval ${arr_build_command[$VersionSelect]}
 		else
-			echo "The input does not meet the conditions"
+			echo "exit"
 		fi
 	else
-		echo "The input does not meet the criteria"
+		echo "exit"
 	fi
+elif [ $num == 4 ];
+	then 
+	UpdateProject
 elif [ $num == 5 ];
-	then echo "Updates download specific warehouse"
-	read -p "Please enter your updated warehouse name:" StoreHouse
-	repo sync -c $StoreHouse
-elif [ $num == 6 ];
-	then echo "The download version"
-	repo sync -j16 -c --no-tags
-elif [ $num == 7 ];
 	then echo "The fallback code"
 	git status
 	echo 1.No display, please enter 1
 	echo 2.Display green, please enter 2
 	echo 3.Display red, please enter 3
+	echo 4.Exit
 	read -p "Please enter your choice:" RollbackSelection
-		if [ $RollbackSelection == 1];
+		if [ $RollbackSelection == 1 ];
 		then git reset --soft HEAD^
 		git status
 		read -p "Please enter the fallback code path:" FilePath
@@ -172,10 +228,10 @@ elif [ $num == 7 ];
 		read -p "Please enter the fallback code path:" FilePath
 		git checkout $FilePath
 		else
-		echo "The input does not meet the criteria"
+		echo "exit"
 		fi
 	echo "If the rollback is not successful and the display file is red, it is added and can be deleted directly"
-elif [ $num == 8 ];
+elif [ $num == 6 ];
 	then echo "Reverse code to a specific version"
 	read -p "Please enter the location of your manifest. XML file:" FilePath
 	echo $FilePath
@@ -189,8 +245,9 @@ elif [ $num == 8 ];
 	git commit
 	cd $NewFilePath
 	repo init -m manifest.xml
-	echo 1.Pull a single warehouse
+	echo 1.Pull when warehouse
 	echo 2.Pull down all the code
+	echo 3.Exit
 	read -p "Please enter your choice:" GetCodeSelect
 	if [ $GetCodeSelect == 1 ];
 		then read -p "Please enter your warehouse name:" WarehouseName
@@ -198,16 +255,16 @@ elif [ $num == 8 ];
 	elif [ $GetCodeSelect == 2 ];
 		then repo sync -j16 -c --no-tags
 	else
-	echo "The input does not meet the criteria"
+	echo "exit"
 	fi
-elif [ $num == 9 ];
+elif [ $num == 7 ];
 	then read -p "Please enter your Branch name:" FileName
 	repo start $FileName --all
-elif [ $num == 10 ];
+elif [ $num == 8 ];
 	then git log
-elif [ $num == 11 ];
+elif [ $num == 9 ];
 	then echo "See the conflict:"
 	git diff
 else
-	echo "The input does not meet the criteria"
+	echo "exit"
 fi
