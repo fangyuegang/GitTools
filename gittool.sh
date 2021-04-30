@@ -279,8 +279,7 @@ elif [ $num == 5 ];
 			git checkout $FilePath
 		elif [ $RollbackSelection == 4 ];
 			then
-			repo forall -c "git clean -df"
-			repo forall -c "git checkout ."
+			repo forall -c git reset --hard HEAD
 		else
 			echo "退出"
 		fi
