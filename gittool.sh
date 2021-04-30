@@ -95,6 +95,63 @@ UpdateProject(){
 		echo "退出"
 	fi
 }
+
+PushLibrary(){
+	git status
+	echo 1.添加单个文件到自己本地仓
+	echo 2.添加全部文件到自己本地仓
+	echo 3.退出
+	read -p "请输入您的选择:" add_local_warehouse
+	if [ $add_local_warehouse == 1 ];
+		then 
+		add_select=1
+		while [ $add_select -ne 2 ]
+		do
+			read -p "请输入你想添加的文件名:" add_file_name
+			git add $add_file_name
+			read -p "是否继续添加继续,退出请输入2:" add_select
+		done
+	elif [ $add_local_warehouse == 2 ];
+		then 
+		git add .
+	fi
+	echo 1.将本地仓代码提交到远端仓
+	echo 2.退出
+	read -p "请输入您的选择:" add_remote_warehouse
+	if [ $add_remote_warehouse == 1 ];
+		then 
+		git commit
+	else
+		echo "退出"
+	fi
+	echo 1.启动代码上传到服务器
+	echo 2.不启动代码上传到服务器
+	echo 3.退出
+	read -p "请输入您的选择:" UploadServer
+	if [ $UploadServer == 1 ];
+		then echo "启动代码上传到服务器"
+		repo upload .
+		echo 1.启动代码编译
+		echo 2.不启动代码编译
+		echo 3.退出
+		read -p "请输入您的选择:" CodeCompilation
+			if [ $CodeCompilation == 1 ];
+				then echo "启动代码编译"
+				read -p "请输入你的Branch名称:" BranchName
+				read -p "请输入你的ChangeId:" ChangName
+				repo build -b $BranchName $ChangName
+			elif [ $CodeCompilation == 2 ];
+				then echo "不启动代码编译"
+			else 
+				echo "退出"
+			fi
+	elif [ $UploadServer == 2 ];
+		then echo "不启动代码上传到服务器"
+	else
+		echo "退出"
+	fi
+
+}
 echo 1.Git初始化
 echo 2.上库代码
 echo 3.代码编译 
@@ -125,32 +182,24 @@ if	[ $num == 1 ];
 		InitProject
 	fi
 elif [ $num  == 2 ];
-	then echo "上库代码"
-	git add .
-	git commit
-	echo 1.启动代码上传到服务器
-	echo 2.不启动代码上传到服务器
-	echo 3.退出
-	read -p "请输入您的选择:" UploadServer
-	if [ $UploadServer == 1 ];
-		then echo "启动代码上传到服务器"
-		repo upload .
-		echo 1.启动代码编译
-		echo 2.不启动代码编译
-		echo 3.退出
-		read -p "请输入您的选择:" CodeCompilation
-			if [ $CodeCompilation == 1 ];
-				then echo "启动代码编译"
-				read -p "请输入你的Branch名称:" BranchName
-				read -p "请输入你的ChangeId:" ChangName
-				repo build -b $BranchName $ChangName
-			elif [ $CodeCompilation == 2 ];
-				then echo "不启动代码编译"
-			else 
-				echo "退出"
-			fi
-	elif [ $UploadServer == 2 ];
-		then echo "不启动代码上传到服务器"
+	then echo "上库代码,请确保当前是最新代码"
+	echo 1.已是最新代码，继续上库
+	echo 2.非最新代码，退出
+	read -p "请输入您的选择:" laset_code
+	if	[ $laset_code == 1 ];
+		then 
+		current_branch_name=`git rev-parse --abbrev-ref HEAD`
+		empty_branch_name=" "
+		echo $current_branch_name
+		if [ "$current_branch_name" == "$empty_branch_name" ]; 
+			then echo "检测到当前没有Branch"
+			echo $empty_branch_name
+			read -p "请输入你创建Branch名称:" new_branch_name
+			repo start $new_branch_name --all
+		else 
+			echo "检测到当前已经存在"$current_branch_name"分支"	
+		fi
+		PushLibrary
 	else
 		echo "退出"
 	fi
