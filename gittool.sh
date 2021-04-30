@@ -259,25 +259,30 @@ elif [ $num == 5 ];
 	echo 1.无显示，请输入1
 	echo 2.显示绿色，请输入2
 	echo 3.显示红色，请输入3
-	echo 4.退出
+	echo 4.回退本地修改的所有代码,此过程较长
+	echo 5.退出
 	read -p "请输入您的选择:" RollbackSelection
 		if [ $RollbackSelection == 1 ];
-		then git reset --soft HEAD^
-		git status
-		read -p "请输入回退代码路径:" FilePath
-		git reset HEAD $FilePath
-		git checkout $FilePath
+			then git reset --soft HEAD^
+			git status
+			read -p "请输入回退代码路径:" FilePath
+			git reset HEAD $FilePath
+			git checkout $FilePath
 		elif [ $RollbackSelection == 2 ];
-		then git status
-		read -p "请输入回退代码路径:" FilePath
-		git reset HEAD $FilePath
-		git checkout $FilePath
+			then git status
+			read -p "请输入回退代码路径:" FilePath
+			git reset HEAD $FilePath
+			git checkout $FilePath
 		elif [ $RollbackSelection == 3 ];
-		then git status
-		read -p "请输入回退代码路径:" FilePath
-		git checkout $FilePath
+			then git status
+			read -p "请输入回退代码路径:" FilePath
+			git checkout $FilePath
+		elif [ $RollbackSelection == 4 ];
+			then
+			repo forall -c "git clean -df"
+			repo forall -c "git checkout ."
 		else
-		echo "退出"
+			echo "退出"
 		fi
 	echo "如果回退未成功且显示文件为红色，则为新增，直接删除即可"
 elif [ $num == 6 ];
