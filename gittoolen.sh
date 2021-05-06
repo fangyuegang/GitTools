@@ -95,8 +95,65 @@ UpdateProject(){
 		echo "exit"
 	fi
 }
+
+PushLibrary(){
+	git status
+	echo 1.Add a single file to your local repository
+	echo 2.Add all files to your local repository
+	echo 3.Exit
+	read -p "Please enter your choice:" add_local_warehouse
+	if [ $add_local_warehouse == 1 ];
+		then 
+		add_select=1
+		while [ $add_select -ne 2 ]
+		do
+			read -p "Please enter the filename you want to add:" add_file_name
+			git add $add_file_name
+			read -p "To continue, enter 2 to exit:" add_select
+		done
+	elif [ $add_local_warehouse == 2 ];
+		then 
+		git add .
+	fi
+	echo 1.Submit the local bin code to the remote bin
+	echo 2.Exit
+	read -p "Please enter your choice:" add_remote_warehouse
+	if [ $add_remote_warehouse == 1 ];
+		then 
+		git commit
+	else
+		echo "Exit"
+	fi
+	echo 1.The startup code is uploaded to the server
+	echo 2.Do not start code upload to server
+	echo 3.Exit
+	read -p "Please enter your choice:" UploadServer
+	if [ $UploadServer == 1 ];
+		then echo "The startup code is uploaded to the server"
+		repo upload .
+		echo 1.Start code compilation
+		echo 2.Code compilation is not started
+		echo 3.Exit
+		read -p "Please enter your choice:" CodeCompilation
+			if [ $CodeCompilation == 1 ];
+				then echo "Start code compilation"
+				read -p "Please enter your Branch name:" BranchName
+				read -p "Please enter your changeID:" ChangName
+				repo build -b $BranchName $ChangName
+			elif [ $CodeCompilation == 2 ];
+				then echo "Code compilation is not started"
+			else 
+				echo "Exit"
+			fi
+	elif [ $UploadServer == 2 ];
+		then echo "Do not start code upload to server"
+	else
+		echo "Exit"
+	fi
+
+}
 echo 1.Git initialization
-echo 2.The library code
+echo 2.The code to library 
 echo 3.The code to compile 
 echo 4.Update the code
 echo 5.The fallback code
@@ -125,32 +182,24 @@ if	[ $num == 1 ];
 		InitProject
 	fi
 elif [ $num  == 2 ];
-	then echo "The library code"
-	git add .
-	git commit
-	echo 1.The startup code is uploaded to the server
-	echo 2.Do not start code upload to server
-	echo 3.Exit
-	read -p "Please enter your choice:" UploadServer
-	if [ $UploadServer == 1 ];
-		then echo "The startup code is uploaded to the server"
-		repo upload .
-		echo 1.Start code compilation
-		echo 2.Code compilation is not started
-		echo 3.Exit
-		read -p "Please enter your choice:" CodeCompilation
-			if [ $CodeCompilation == 1 ];
-				then echo "Start code compilation"
-				read -p "Please enter your Branch name:" BranchName
-				read -p "Please enter your changeID:" ChangName
-				repo build -b $BranchName $ChangName
-			elif [ $CodeCompilation == 2 ];
-				then echo "Code compilation is not started"
-			else 
-				echo "exit"
-			fi
-	elif [ $UploadServer == 2 ];
-		then echo "Do not start code upload to server"
+	then echo "The library code, please make sure the current code is up to date"
+	echo 1.Is the latest code, continue to library
+	echo 2.Not up to date code, exit
+	read -p "Please enter your choice:" laset_code
+	if	[ $laset_code == 1 ];
+		then 
+		current_branch_name=`git rev-parse --abbrev-ref HEAD`
+		empty_branch_name=" "
+		echo $current_branch_name
+		if [ "$current_branch_name" == "$empty_branch_name" ]; 
+			then echo "No Branch is currently detected"
+			echo $empty_branch_name
+			read -p "Please enter the name of the Branch you created:" new_branch_name
+			repo start $new_branch_name --all
+		else 
+			echo "A current exists detected"$current_branch_name"branch"	
+		fi
+		PushLibrary
 	else
 		echo "exit"
 	fi
@@ -163,10 +212,18 @@ elif [ $num == 3 ];
 		echo $ini_select:$i
 	done
 	read -p "Please enter your choice:" VersionSelect
-	echo $ini_select
 	if [ $VersionSelect -lt $ini_select ];
 		then 
 		echo "The version you currently select:"${arr_name[$VersionSelect]}
+		for ((i=0;i<20;i++))
+		do 
+			repo_path=`find . -maxdepth 1 -name '.repo'`
+			if [ -n "$repo_path" ];
+				then 
+				break
+			fi
+			cd ../
+		done
 		echo 1.Select Compile Partial Mirror
 		echo 2.Select to compile all images
 		echo 3.Exit
@@ -209,8 +266,9 @@ elif [ $num == 5 ];
 	git status
 	echo 1.No display, please enter 1
 	echo 2.Display green, please enter 2
-	echo 3.Display red, please enter 3
-	echo 4.Exit
+	echo 3.isplay red, please enter 3
+	echo 4.It takes a long time to roll back all code that has been modified locally
+	echo 5.Exit
 	read -p "Please enter your choice:" RollbackSelection
 		if [ $RollbackSelection == 1 ];
 		then git reset --soft HEAD^
@@ -224,9 +282,12 @@ elif [ $num == 5 ];
 		git reset HEAD $FilePath
 		git checkout $FilePath
 		elif [ $RollbackSelection == 3 ];
-		then git status
-		read -p "Please enter the fallback code path:" FilePath
-		git checkout $FilePath
+			then git status
+			read -p "Please enter the fallback code path:" FilePath
+			git checkout $FilePath
+		elif [ $RollbackSelection == 4 ];
+			then
+			repo forall -c git reset --hard HEAD
 		else
 		echo "exit"
 		fi
