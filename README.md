@@ -29,6 +29,7 @@ Linux系统 gittools工具
 
 具体运行效果，可以查看下载包中"效果演示文档"
 
+后续版本功能优化:欢迎大家关注: https://github.com/fangyuegang/GitTools
 
 欢迎大家有问题或者疑问可以添加QQ:2251858097
 或者邮件:2251858097@qq.com
