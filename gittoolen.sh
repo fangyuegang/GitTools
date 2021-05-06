@@ -228,11 +228,11 @@ elif [ $num == 3 ];
 		echo 2.Select to compile all images
 		echo 3.Exit
 		read -p "Please enter your choice:" build_select
-		if [ $build_select==1 ];
+		if [ $build_select -eq 1 ];
 			then 
 			read -p "Please enter the name of the image you want to compile:" build_name
 			eval ${arr_build_command[$VersionSelect]} $build_name
-		elif [ $build_select==2 ];
+		elif [ $build_select -eq 2 ];
 			then 
 			eval ${arr_build_command[$VersionSelect]}
 		else
