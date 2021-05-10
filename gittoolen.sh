@@ -8,7 +8,7 @@ curPath=$(dirname $(readlink -f "$0"))
 ReadFile(){
 	IFS=$'\n\n' 
 	#echo awk '/<projectname>/,/<\/projectname>/ {print $0}' server.xml | awk -v FS="<projectname>" -v OFS=" " '{print $2}' | awk -v FS="<\/projectname>" -v OFS=" " '{print $1}'
-	for ele_value in `cat $curPath/ProjectConfig.xml | awk -F '>' '{print $2}' | awk -F '<' '{print $1}'`
+	for ele_value in `cat $curPath/ProjectConfigEn.xml | awk -F '>' '{print $2}' | awk -F '<' '{print $1}'`
 	do
 		a=$(($a+1))
 		arr[$a]=$ele_value
@@ -241,6 +241,15 @@ elif [ $num == 3 ];
 	elif [ $VersionSelect -eq $ini_select ];
 		then 
 		echo "The version you currently select:"${arr_name[$VersionSelect]}
+		for ((i=0;i<20;i++))
+		do 
+			repo_path=`find . -maxdepth 1 -name '.repo'`
+			if [ -n "$repo_path" ];
+				then 
+				break
+			fi
+			cd ../
+		done
 		echo 1.Select Compile Partial Mirror
 		echo 2.Select to compile all images
 		echo 3.Exit
