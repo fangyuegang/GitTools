@@ -241,6 +241,15 @@ elif [ $num == 3 ];
 	elif [ $VersionSelect -eq $ini_select ];
 		then 
 		echo "你当前选择的版本:"${arr_name[$VersionSelect]}
+		for ((i=0;i<20;i++))
+		do 
+			repo_path=`find . -maxdepth 1 -name '.repo'`
+			if [ -n "$repo_path" ];
+				then 
+				break
+			fi
+			cd ../
+		done
 		echo 1.选择编译部分镜像
 		echo 2.选择编译所有镜像
 		echo 3.退出
